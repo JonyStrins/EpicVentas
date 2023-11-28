@@ -44,9 +44,7 @@ fun ProductCard() {
                 horizontalAlignment = Alignment.End
             ) {
                 Row {
-                    Button(onClick = {  }){
-                        Text(text = "1")
-                    }
+                    Contador()
                     IconButton(
                         onClick = {  }
                     ){

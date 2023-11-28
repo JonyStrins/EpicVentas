@@ -13,6 +13,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.jonystrins.epicventas.components.NavBarM3
+import com.jonystrins.epicventas.views.AgregarView
 import com.jonystrins.epicventas.views.AjustesView
 import com.jonystrins.epicventas.views.AlmacenView
 import com.jonystrins.epicventas.views.CarritoView
@@ -40,6 +41,12 @@ fun NavManager() {
             }
             composable(route = "Ajustes"){
                 AjustesView(navController)
+            }
+            composable(route = "Agregar/{scaneo}"){
+                val scaneo = it.arguments?.getString("scaneo")
+                if (scaneo != null){
+                    AgregarView(scaneo, navController)
+                }
             }
         }
     }
