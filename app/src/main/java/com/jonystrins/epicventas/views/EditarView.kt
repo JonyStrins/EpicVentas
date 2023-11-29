@@ -38,7 +38,6 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -46,17 +45,18 @@ import coil.compose.AsyncImage
 import com.jonystrins.epicventas.R
 import com.jonystrins.epicventas.transforms.PrefixVisualTransformation
 
+@Preview
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AgregarView(
-    numero: String,
-    navController: NavController
+fun EditarView(
+//    numero: String,
+//    navController: NavController
 ){
 
-    var num by remember { mutableStateOf(numero) }
+    var num by remember { mutableStateOf("") }
     var nombre by remember { mutableStateOf("") }
     var precio by remember { mutableStateOf("") }
-    var cant by remember { mutableStateOf("0") }
+    var cant by remember { mutableStateOf("") }
     var exist by remember { mutableStateOf("0") }
 
     Scaffold(
@@ -68,7 +68,7 @@ fun AgregarView(
                 navigationIcon = {
                     IconButton(
                         onClick = {
-                            navController.popBackStack()
+//                            navController.popBackStack()
                         }
                     ){
                         Icon(Icons.AutoMirrored.Default.ArrowBack, null)
@@ -111,17 +111,17 @@ fun AgregarView(
                         contentScale = ContentScale.Crop
                     )
                     Row {
-                            OutlinedTextField(
-                                value = num,
-                                onValueChange = { num = it },
-                                label = { Text("Numero del producto") },
-                                singleLine = true,
-                                keyboardOptions = KeyboardOptions.Default.copy(
-                                    keyboardType = KeyboardType.Number,
-                                    imeAction = ImeAction.Done
-                                ),
-                                placeholder = { Text("Ingrese el numero del producto") }
+                        OutlinedTextField(
+                            value = num,
+                            onValueChange = { num = it },
+                            label = { Text("Numero del producto") },
+                            singleLine = true,
+                            placeholder = { Text("Ingrese el numero del producto") },
+                            keyboardOptions = KeyboardOptions.Default.copy(
+                                keyboardType = KeyboardType.Number,
+                                imeAction = ImeAction.Done
                             )
+                        )
                     }
                     Row {
                         OutlinedTextField(
@@ -129,10 +129,10 @@ fun AgregarView(
                             onValueChange = { nombre = it },
                             label = { Text("Nombre del producto") },
                             singleLine = true,
+                            placeholder = { Text("Ingrese el Nombre del producto") },
                             keyboardOptions = KeyboardOptions.Default.copy(
                                 imeAction = ImeAction.Done
-                            ),
-                            placeholder = { Text("Ingrese el nombre del producto") }
+                            )
                         )
                     }
                     Row {
@@ -140,8 +140,8 @@ fun AgregarView(
                             value = precio,
                             onValueChange = { precio = it },
                             label = { Text("Precio del producto") },
-                            visualTransformation = PrefixVisualTransformation("$ "),
                             singleLine = true,
+                            visualTransformation = PrefixVisualTransformation("$ "),
                             keyboardOptions = KeyboardOptions.Default.copy(
                                 keyboardType = KeyboardType.Number,
                                 imeAction = ImeAction.Done
@@ -163,7 +163,7 @@ fun AgregarView(
                                 onValueChange = { cant = it },
                                 label = { Text("#") },
                                 placeholder = { Text("#") },
-                                modifier = Modifier.width(100.dp),
+                                modifier = Modifier.width(70.dp),
                                 singleLine = true,
                                 keyboardOptions = KeyboardOptions.Default.copy(
                                     keyboardType = KeyboardType.Number,
@@ -181,8 +181,7 @@ fun AgregarView(
                                 value = exist,
                                 onValueChange = { exist = it },
                                 label = { Text("#") },
-                                placeholder = { Text("#") },
-                                modifier = Modifier.width(100.dp),
+                                modifier = Modifier.width(70.dp),
                                 singleLine = true,
                                 readOnly = true,
                             )

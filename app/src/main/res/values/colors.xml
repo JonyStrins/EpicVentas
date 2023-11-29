@@ -9,4 +9,17 @@
     <color name="white">#FFFFFFFF</color>
     <color name="verde">#8FD14F</color>
     <color name="confirmacion">#42AC1D</color>
+
+
+    <color name="dodger_blue_50">#EFFAFF</color>
+    <color name="dodger_blue_100">#DAF3FF</color>
+    <color name="dodger_blue_200">#BEEBFF</color>
+    <color name="dodger_blue_300">#91E1FF</color>
+    <color name="dodger_blue_400">#5DCDFD</color>
+    <color name="dodger_blue_500">#37B2FA</color>
+    <color name="dodger_blue_600">#2B9BF0</color>
+    <color name="dodger_blue_700">#197DDC</color>
+    <color name="dodger_blue_800">#1B64B2</color>
+    <color name="dodger_blue_900">#1C558C</color>
+    <color name="dodger_blue_950">#163455</color>
 </resources>

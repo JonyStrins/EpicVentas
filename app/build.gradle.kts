@@ -1,6 +1,8 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+//    id("com.google.devtools.ksp")
+    id("kotlin-kapt")
 }
 
 android {
@@ -50,6 +52,17 @@ android {
 }
 
 dependencies {
+
+    //Room
+    val room_version = "2.6.0"
+
+    implementation("androidx.room:room-runtime:$room_version")
+    annotationProcessor("androidx.room:room-compiler:$room_version")
+//    ksp("androidx.room:room-compiler:$room_version")
+    kapt("androidx.room:room-compiler:$room_version")
+
+    //Coil
+    implementation("io.coil-kt:coil-compose:2.5.0")
 
     //ZXing Android Embedded
     implementation ("com.journeyapps:zxing-android-embedded:4.3.0")

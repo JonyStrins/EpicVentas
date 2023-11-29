@@ -83,6 +83,7 @@ fun AlmacenView(navController: NavController) {
             floatingActionButton = {
                 FloatingActionButton(
                     onClick = {
+                              navController.navigate("Agregar")
                     },
                 ){
                     Icon(ImageVector.vectorResource(R.drawable.outline_note_add_24), null)
