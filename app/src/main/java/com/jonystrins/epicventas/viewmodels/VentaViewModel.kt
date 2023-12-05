@@ -15,7 +15,7 @@ class VentaViewModel(
     private val repository: VentaRepository,
     private val fecha: String
 ): ViewModel() {
-    var state by remember { mutableStateOf(VentaState()) }
+    var state by mutableStateOf(VentaState())
         private set
 
     init {
@@ -26,7 +26,7 @@ class VentaViewModel(
         }
     }
 
-    suspend fun obtenerVenta(id: Int): Venta{
+    fun obtenerVenta(id: Int): Venta{
         viewModelScope.launch {
             state = state.copy(
                 venta = repository.getVenta(id)
@@ -34,6 +34,10 @@ class VentaViewModel(
         }
 
         return repository.getVenta(id)
+    }
+
+    fun obtenerUltimoIdVenta(): Int{
+        return repository.getUltimoId()
     }
 
     fun agregarVenta(venta: Venta){

@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.FabPosition
@@ -40,11 +41,21 @@ import com.jonystrins.epicventas.R
 import com.jonystrins.epicventas.components.ListaProductExist
 import com.jonystrins.epicventas.components.ProductCard
 import com.jonystrins.epicventas.components.SearchBarM3
+import com.jonystrins.epicventas.repository.ProductoRepository
+import com.jonystrins.epicventas.viewmodels.DetallesVentasViewModel
+import com.jonystrins.epicventas.viewmodels.ProductoViewModel
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanOptions
 
 @Composable
-fun AlmacenView(navController: NavController) {
+fun AlmacenView(
+    navController: NavController,
+    productoViewModel: ProductoViewModel,
+    repository: ProductoRepository,
+    carritoViewModel: DetallesVentasViewModel
+    ) {
+
+    productoViewModel.obtenerProductos()
 
     var resultadoScanner by remember{ mutableStateOf("") }
     val scanLauncher = rememberLauncherForActivityResult(contract = ScanContract()){
@@ -109,9 +120,8 @@ fun AlmacenView(navController: NavController) {
                 LazyColumn(
                     modifier = Modifier.padding(0.dp, 5.dp)
                 ) {
-                    items(20){
-                            item ->
-                        ListaProductExist()
+                    items(repository.getProductos()){
+                        ListaProductExist(it, navController, "", carritoViewModel, 0)
                         Spacer(modifier = Modifier.size(3.dp))
                     }
                 }

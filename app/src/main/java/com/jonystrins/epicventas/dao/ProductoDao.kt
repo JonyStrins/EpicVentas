@@ -11,10 +11,10 @@ import com.jonystrins.epicventas.models.Producto
 interface ProductoDao {
 
     @Query("SELECT * FROM Producto ORDER BY id DESC")
-    suspend fun getProductos(): List<Producto>
+    fun getProductos(): List<Producto>
 
     @Query("SELECT * FROM Producto WHERE id = :idProducto")
-    suspend fun getProducto(idProducto: Int): Producto
+    fun getProducto(idProducto: Int): Producto
 
     @Insert
     suspend fun agregarProducto(producto: Producto)
@@ -23,5 +23,5 @@ interface ProductoDao {
     suspend fun actualizarProducto(producto: Producto)
 
     @Delete
-    suspend fun eliminarProducto(producto: Producto)
+    fun eliminarProducto(producto: Producto)
 }

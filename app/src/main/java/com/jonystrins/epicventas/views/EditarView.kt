@@ -1,5 +1,8 @@
 package com.jonystrins.epicventas.views
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -14,6 +17,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -23,6 +27,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.runtime.Composable
@@ -34,41 +39,85 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.jonystrins.epicventas.R
+import com.jonystrins.epicventas.models.Producto
+import com.jonystrins.epicventas.provider.ComposeFileProvider
 import com.jonystrins.epicventas.transforms.PrefixVisualTransformation
+import com.jonystrins.epicventas.viewmodels.ProductoViewModel
 
-@Preview
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditarView(
-//    numero: String,
-//    navController: NavController
+    id: Int,
+    navController: NavController,
+    productoViewModel: ProductoViewModel
 ){
 
-    var num by remember { mutableStateOf("") }
-    var nombre by remember { mutableStateOf("") }
-    var precio by remember { mutableStateOf("") }
-    var cant by remember { mutableStateOf("") }
-    var exist by remember { mutableStateOf("0") }
+    val producto = productoViewModel.obtenerProducto(id)
+
+    var uri : Uri? = null
+
+    var hasImage by remember {
+        mutableStateOf(producto.imagen != null)
+    }
+
+    var imageUri by remember {
+        mutableStateOf<Uri?>(producto.imagen?.toUri())
+    }
+
+    val imagePicker = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent(),
+        onResult = {
+            hasImage = it != null
+            imageUri = it
+        }
+    )
+
+    val cameraLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.TakePicture(),
+        onResult = {
+            if(it) imageUri = uri
+            hasImage = it
+        }
+    )
+
+    val context = LocalContext.current
+
+    var num by remember { mutableStateOf(producto.codigoBarras) }
+    var nombre by remember { mutableStateOf(producto.nombre) }
+    var precio by remember { mutableStateOf("${producto.precio}") }
+    var cant by remember { mutableStateOf("0") }
+    var exist by remember { mutableStateOf("${producto.onStock}") }
+
+    var entity = Producto(
+        id = producto.id,
+        nombre = nombre,
+        codigoBarras = num,
+        onStock = if(cant != "") exist.toInt() + cant.toInt() else exist.toInt(),
+        imagen = imageUri.toString(),
+        precio = if(precio != "") precio.toDouble() else 00.00
+    )
 
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
                 title = {
-                    Text("Agregar")
+                    Text("Editar")
                 },
                 navigationIcon = {
                     IconButton(
                         onClick = {
-//                            navController.popBackStack()
+                            navController.popBackStack()
                         }
                     ){
                         Icon(Icons.AutoMirrored.Default.ArrowBack, null)
@@ -82,7 +131,6 @@ fun EditarView(
                     actionIconContentColor = colorResource(R.color.dodger_blue_300),
                 )
             )
-
         }
     ) {
         Column(
@@ -98,18 +146,36 @@ fun EditarView(
                     modifier = Modifier.padding(7.dp).fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    AsyncImage(
-                        model = null,
-                        contentDescription = null,
-                        placeholder = painterResource(R.drawable.ic_launcher_background),
-                        modifier = Modifier
-                            .width(300.dp)
-                            .height(300.dp)
-                            .clickable {
-
-                            },
-                        contentScale = ContentScale.Crop
-                    )
+                    if (hasImage && imageUri != null){
+                        if (hasImage){
+                            AsyncImage(
+                                model = imageUri,
+                                contentDescription = null,
+                                placeholder = painterResource(R.drawable.ic_launcher_background),
+                                modifier = Modifier
+                                    .width(250.dp)
+                                    .height(250.dp)
+                                    .clickable {
+                                        imagePicker.launch("image/*")
+                                    },
+                                contentScale = ContentScale.Crop
+                            )
+                        }
+                    }else{
+                        Box(
+                            modifier = Modifier
+                                .width(250.dp)
+                                .height(250.dp)
+                        ) {
+                            TextButton(
+                                onClick = {
+                                    imagePicker.launch("image/*")
+                                }
+                            ){
+                                Text("Agregar Imagen")
+                            }
+                        }
+                    }
                     Row {
                         OutlinedTextField(
                             value = num,
@@ -150,7 +216,7 @@ fun EditarView(
                     }
                     Row(
                         horizontalArrangement = Arrangement.SpaceEvenly,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth().padding(5.dp)
                     ) {
                         Column(
                             verticalArrangement = Arrangement.Center,
@@ -195,13 +261,18 @@ fun EditarView(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Button(
-                    onClick = {},
+                    onClick = {
+                        navController.popBackStack()
+                    },
                     colors = ButtonColors(Color.Red, Color.White, Color.White, Color.White)
                 ){
                     Text("Cancelar")
                 }
                 Button(
-                    onClick = {},
+                    onClick = {
+                        productoViewModel.actualizarProdcuto(entity)
+                        navController.popBackStack()
+                    },
                     colors = ButtonColors(colorResource(R.color.confirmacion), Color.White, Color.White, Color.White)
                 ){
                     Text("Agregar")

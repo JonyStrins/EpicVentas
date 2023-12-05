@@ -10,18 +10,21 @@ import com.jonystrins.epicventas.models.Venta
 @Dao
 interface VentaDao {
 
-    @Query("SELECT * FROM Venta WHERE fecha = :fecha")
-    suspend fun obtenerVentas(fecha: String): List<Venta>
+    @Query("SELECT * FROM Venta WHERE fecha = :fecha ORDER BY id DESC")
+    fun obtenerVentas(fecha: String): List<Venta>
 
     @Query("SELECT * FROM Venta WHERE id = :id")
-    suspend fun obtenerVenta(id: Int): Venta
+    fun obtenerVenta(id: Int): Venta
+
+    @Query("SELECT MAX(id) FROM Venta")
+    fun getUltimoIdNota(): Int
 
     @Insert
-    suspend fun agregarVenta(venta: Venta)
+    fun agregarVenta(venta: Venta)
 
     @Update
-    suspend fun actualizarVenta(venta: Venta)
+    fun actualizarVenta(venta: Venta)
 
     @Delete
-    suspend fun eliminarVenta(venta: Venta)
+    fun eliminarVenta(venta: Venta)
 }

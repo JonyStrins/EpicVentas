@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 class ProductoViewModel(
     private val repository: ProductoRepository
 ): ViewModel() {
-    var state by remember { mutableStateOf(ProductoState()) }
+    var state by mutableStateOf(ProductoState())
         private set
 
     init {
@@ -25,13 +25,15 @@ class ProductoViewModel(
         }
     }
 
-    suspend fun obtenerProducto(id: Int): Producto{
+    fun obtenerProductos(){
         viewModelScope.launch {
             state = state.copy(
-                producto = repository.getProducto(id)
+                productos = repository.getProductos()
             )
         }
+    }
 
+    fun obtenerProducto(id: Int): Producto{
         return repository.getProducto(id)
     }
 

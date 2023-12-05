@@ -18,13 +18,21 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import com.jonystrins.epicventas.models.Venta
+import com.jonystrins.epicventas.repository.DetallesVentaRepository
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
 @Composable
-fun VentaCard(){
+fun VentaCard(
+    venta: Venta,
+    navController: NavController
+){
     OutlinedCard(
         modifier = Modifier.width(150.dp).height(110.dp),
+        onClick = {
+            navController.navigate("TicketReturn/${venta.id}")
+        }
     ) {
         Row(
             modifier = Modifier.fillMaxSize()
@@ -32,9 +40,9 @@ fun VentaCard(){
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                CenterAlignedTopAppBar(title = { Text("Venta 1") })
-                Text("07:16 p.m", fontSize = 20.sp)
-                Text("Total: $350")
+                CenterAlignedTopAppBar(title = { Text("Venta ${venta.id}") })
+                Text(venta.hora, fontSize = 20.sp)
+                Text("Total: ${venta.total}")
             }
         }
     }

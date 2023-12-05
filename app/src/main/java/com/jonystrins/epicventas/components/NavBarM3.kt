@@ -41,11 +41,6 @@ fun NavBarM3(navController: NavHostController) {
                 title = "Almacen",
                 selectedIcon = ImageVector.vectorResource(R.drawable.inventory_selected),
                 unselectedIcon = ImageVector.vectorResource(R.drawable.inventory_unselected),
-            ),
-            BottomNavigationItem(
-                title = "Ajustes",
-                selectedIcon = Icons.Filled.Settings,
-                unselectedIcon = Icons.Outlined.Settings,
             )
         )
 

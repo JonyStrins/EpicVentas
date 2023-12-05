@@ -1,5 +1,9 @@
 package com.jonystrins.epicventas.views
 
+import android.net.Uri
+import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -23,6 +27,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.runtime.Composable
@@ -34,6 +39,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
@@ -44,20 +50,63 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.jonystrins.epicventas.R
+import com.jonystrins.epicventas.models.Producto
+import com.jonystrins.epicventas.provider.ComposeFileProvider
 import com.jonystrins.epicventas.transforms.PrefixVisualTransformation
+import com.jonystrins.epicventas.viewmodels.ProductoViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AgregarView(
     numero: String,
-    navController: NavController
+    navController: NavController,
+    productoViewModel: ProductoViewModel
 ){
+
+    var uri : Uri? = null
+
+    var hasImage by remember {
+        mutableStateOf(false)
+    }
+
+    var imageUri by remember {
+        mutableStateOf<Uri?>(null)
+    }
+
+    val imagePicker = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent(),
+        onResult = {uri ->
+            hasImage = uri != null
+            imageUri = uri
+        }
+    )
+
+    val cameraLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.TakePicture(),
+        onResult = { success ->
+            Log.d("IMG", hasImage.toString())
+            Log.d("URI", imageUri.toString())
+            if(success) imageUri = uri
+            hasImage = success
+        }
+    )
+
+    val context = LocalContext.current
 
     var num by remember { mutableStateOf(numero) }
     var nombre by remember { mutableStateOf("") }
     var precio by remember { mutableStateOf("") }
     var cant by remember { mutableStateOf("0") }
     var exist by remember { mutableStateOf("0") }
+
+    var entity = Producto(
+        id = 0,
+        nombre = nombre,
+        codigoBarras = num,
+        onStock = if(cant != "") exist.toInt() + cant.toInt() else exist.toInt(),
+        imagen = imageUri.toString(),
+        precio = if(precio != "") precio.toDouble() else 00.00
+    )
 
     Scaffold(
         topBar = {
@@ -98,18 +147,52 @@ fun AgregarView(
                     modifier = Modifier.padding(7.dp).fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    AsyncImage(
-                        model = null,
-                        contentDescription = null,
-                        placeholder = painterResource(R.drawable.ic_launcher_background),
-                        modifier = Modifier
-                            .width(300.dp)
-                            .height(300.dp)
-                            .clickable {
-
-                            },
-                        contentScale = ContentScale.Crop
-                    )
+                    if (hasImage && imageUri != null){
+                        if (hasImage){
+                            AsyncImage(
+                                model = imageUri,
+                                contentDescription = null,
+                                placeholder = painterResource(R.drawable.ic_launcher_background),
+                                modifier = Modifier
+                                    .width(250.dp)
+                                    .height(250.dp)
+                                    .clickable {
+                                        imagePicker.launch("image/*")
+                                    },
+                                contentScale = ContentScale.Crop
+                            )
+                        }
+                    }else{
+                        Box(
+                            modifier = Modifier
+                                .width(250.dp)
+                                .height(250.dp)
+                        ) {
+                            Column(
+                                verticalArrangement = Arrangement.Center,
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                TextButton(
+                                    onClick = {
+                                        imagePicker.launch("image/*")
+                                    }
+                                ){
+                                    Text("Agregar Imagen")
+                                }
+//                                Button(
+//                                    modifier = Modifier.padding(top = 16.dp),
+//                                    onClick = {
+//                                        uri = ComposeFileProvider.getImageUri(context)
+//                                        //imageUri = uri
+//                                        cameraLauncher.launch(uri) },
+//                                ) {
+//                                    Text(
+//                                        text = "Take photo"
+//                                    )
+//                                }
+                            }
+                        }
+                    }
                     Row {
                             OutlinedTextField(
                                 value = num,
@@ -188,24 +271,28 @@ fun AgregarView(
                             )
                         }
                     }
-                }
-            }
-
-            Row(
-                horizontalArrangement = Arrangement.SpaceAround,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Button(
-                    onClick = {},
-                    colors = ButtonColors(Color.Red, Color.White, Color.White, Color.White)
-                ){
-                    Text("Cancelar")
-                }
-                Button(
-                    onClick = {},
-                    colors = ButtonColors(colorResource(R.color.confirmacion), Color.White, Color.White, Color.White)
-                ){
-                    Text("Agregar")
+                    Row(
+                        horizontalArrangement = Arrangement.SpaceAround,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Button(
+                            onClick = {
+                                      navController.popBackStack()
+                            },
+                            colors = ButtonColors(Color.Red, Color.White, Color.White, Color.White)
+                        ){
+                            Text("Cancelar")
+                        }
+                        Button(
+                            onClick = {
+                                productoViewModel.agregarProducto(entity)
+                                navController.popBackStack()
+                            },
+                            colors = ButtonColors(colorResource(R.color.confirmacion), Color.White, Color.White, Color.White)
+                        ){
+                            Text("Agregar")
+                        }
+                    }
                 }
             }
         }

@@ -7,11 +7,11 @@ class ProductoRepository(
     private val productoDao: ProductoDao
 ) {
 
-    suspend fun getProductos(): List<Producto>{
+    fun getProductos(): List<Producto>{
         return productoDao.getProductos()
     }
 
-    suspend fun getProducto(id: Int): Producto{
+    fun getProducto(id: Int): Producto{
         return productoDao.getProducto(id)
     }
 
@@ -23,7 +23,7 @@ class ProductoRepository(
         productoDao.actualizarProducto(producto)
     }
 
-    suspend fun eliminarProducto(producto: Producto){
+    fun eliminarProducto(producto: Producto){
         productoDao.eliminarProducto(producto)
     }
 }
